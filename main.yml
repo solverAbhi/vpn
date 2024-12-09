@@ -23,8 +23,7 @@
 
     - name: Set required ansible version as a fact
       set_fact:
-        required_ansible_version: "{{ item |  regex_replace('^ansible[\\s+]?(?P<op>[=,>,<]+)[\\s+]?(?P<ver>\\d.\\d+(.\\d+)?)$', '{\"op\": \"\\g<op>\",\"ver\"\
-          : \"\\g<ver>\" }') }}"
+        required_ansible_version: "{{ item | regex_replace('^ansible[\\s+]?(?P<op>[=,>,<]+)[\\s+]?(?P<ver>\\d.\\d+(.\\d+)?)$', '{\"op\": \"\\g<op>\",\"ver\": \"\\g<ver>\" }') }}"
       when: '"ansible" in item'
       with_items: "{{ lookup('file', 'requirements.txt').splitlines() }}"
 
@@ -49,6 +48,65 @@
           Ansible version is {{ pip_package_info.packages.pip.ansible.0.version }}.
           You must update the requirements to use this version of Algo.
           Try to run python3 -m pip install -U -r requirements.txt
+
+- name: MongoDB Table Creation Playbook
+  hosts: localhost
+  become: false
+  tasks:
+    # Step 1: Ensure the required Python version is installed
+    - name: Check Python version
+      command: python3 --version
+      register: python_version_output
+      changed_when: false
+
+    - name: Display Python version
+      debug:
+        var: python_version_output.stdout
+
+    # Step 2: Install required Python dependencies
+    - name: Install pymongo library
+      pip:
+        name: pymongo
+        state: present
+
+    # Step 3: Verify MongoDB is reachable using Python
+    - name: Verify MongoDB connection using Python
+      command: >
+        python3 -c "from pymongo import MongoClient;
+                    client = MongoClient('mongodb://saraswatabhi0007:abhishek@localhost:27017/mdm?authSource=admin');
+                    client.server_info()"
+      register: mongo_connection_status
+      failed_when: mongo_connection_status.rc != 0
+      ignore_errors: true
+
+    - name: Debug MongoDB connection status
+      debug:
+        var: mongo_connection_status.stdout
+
+    # Step 4: Copy the Python script to the deployment directory
+    - name: Copy mongo_create_table.py script to the deployment directory
+      copy:
+        src: "/home/abhishek/algo/library/mongo_create_table.py"  # Replace with the actual path to the script
+        dest: "/tmp/mongo_create_table.py"
+        mode: '0755'
+
+    # Step 5: Run the Python script with MongoDB connection details
+    - name: Run MongoDB table creation script
+      command: >
+        python3 /tmp/mongo_create_table.py --host=localhost --port=27017 --user=your_user --password=your_password
+      register: script_output
+      failed_when: script_output.rc != 0
+
+    # Step 6: Debug the output of the script
+    - name: Debug output from MongoDB table creation script
+      debug:
+        var: script_output.stdout
+
+    # Step 7: Cleanup (Optional) - Remove the script from the temporary directory
+    - name: Remove the script from the temporary directory
+      file:
+        path: "/tmp/mongo_create_table.py"
+        state: absent
 
 - name: Include prompts playbook
   import_playbook: input.yml

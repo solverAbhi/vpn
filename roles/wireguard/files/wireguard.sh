@@ -21,8 +21,42 @@ load_rc_config "$name"
 : ${wg_interface="wg0"}
 
 wg_up() {
+  echo "Authenticating user for WireGuard..."
+  
+  # Execute the MongoDB authentication Python script
+  python3 /home/abhishek/algo/library/mongo_authenticate.py
+  if [ $? -ne 0 ]; then
+      echo "Authentication failed. WireGuard setup aborted."
+      exit 1
+  fi
+
+  echo "Initializing MongoDB table for WireGuard..."
+  
+  # Execute the MongoDB table creation Python script
+  python3 /home/abhishek/algo/library/mongo_create_table.py
+  if [ $? -ne 0 ]; then
+      echo "MongoDB table creation failed. WireGuard setup aborted."
+      exit 1
+  fi
+
   echo "Starting WireGuard..."
+
+  python3 /home/abhishek/algo/library/update_wiregaurd_config.py
+  if [ $? -ne 0 ]; then
+     echo "update the public keys "
+     exit 1
+  fi
+
+  echo "update the public keys "
+
+  # Start WireGuard using daemon for background operation
   /usr/sbin/daemon -cS -p ${pidfile} ${command} up ${wg_interface}
+  if [ $? -eq 0 ]; then
+      echo "WireGuard started successfully."
+  else
+      echo "Failed to start WireGuard."
+      exit 1
+  fi
 }
 
 wg_down() {

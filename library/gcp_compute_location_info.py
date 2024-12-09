@@ -14,7 +14,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1', 'status': ["preview"], 'supported
 ################################################################################
 # Imports
 ################################################################################
-from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest
+from ansible.module_utils.gcp_utils import navigate_hash, GcpSession, GcpModule, GcpRequest # type: ignore
 import json
 
 ################################################################################

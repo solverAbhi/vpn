@@ -167,8 +167,8 @@ import datetime
 import time
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six.moves.urllib.parse import quote as urlquote
-from ansible.module_utils.scaleway import SCALEWAY_LOCATION, scaleway_argument_spec, Scaleway
+from ansible.module_utils.six.moves.urllib.parse import quote as urlquote # type: ignore
+from ansible.module_utils.scaleway import SCALEWAY_LOCATION, scaleway_argument_spec, Scaleway # type: ignore
 
 SCALEWAY_SERVER_STATES = (
     'stopped',

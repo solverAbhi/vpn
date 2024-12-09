@@ -113,7 +113,7 @@ import time
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.urls import fetch_url
-from ansible.module_utils.digital_ocean import DigitalOceanHelper
+from ansible.module_utils.digital_ocean import DigitalOceanHelper # type: ignore
 
 class Response(object):
 

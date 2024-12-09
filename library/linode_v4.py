@@ -11,11 +11,11 @@ __metaclass__ = type
 import traceback
 
 from ansible.module_utils.basic import AnsibleModule, env_fallback, missing_required_lib
-from ansible.module_utils.linode import get_user_agent
+from ansible.module_utils.linode import get_user_agent # type: ignore
 
 LINODE_IMP_ERR = None
 try:
-    from linode_api4 import Instance, LinodeClient
+    from linode_api4 import Instance, LinodeClient # type: ignore
     HAS_LINODE_DEPENDENCY = True
 except ImportError:
     LINODE_IMP_ERR = traceback.format_exc()

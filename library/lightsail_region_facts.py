@@ -67,7 +67,7 @@ except ImportError:
     pass
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.ec2 import (ec2_argument_spec, get_aws_connection_info, boto3_conn,
+from ansible.module_utils.ec2 import (ec2_argument_spec, get_aws_connection_info, boto3_conn, # type: ignore
                                       HAS_BOTO3, camel_dict_to_snake_dict)
 
 def main():
